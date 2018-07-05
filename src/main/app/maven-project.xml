@@ -1,56 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:spring="http://www.springframework.org/schema/beans" 
+<mule 
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" 
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" 
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms" 
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
 http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
 http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
-    <http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="8081" doc:name="HTTP Listener Configuration"/>
-    <spring:beans>
-        <spring:bean id="Bean" name="Bean" class="com.mulesoft.training.Database"/>
-    </spring:beans>
-    
-    <db:derby-config name="Derby_Configuration" url="jdbc:derby:memory:muleEmbeddedDB;create=true" doc:name="Derby Configuration"/>
-    <jms:activemq-connector name="Active_MQ" brokerURL="vm://localhost" validateConnections="true" doc:name="Active MQ"/>
-    <http:listener-config name="HTTP_Main_Flow" host="0.0.0.0" port="8085" doc:name="HTTP Listener Configuration"/>
-    
-    <flow name="mavenFlow">
-        <http:listener config-ref="HTTP_Main_Flow" path="/hello" doc:name="HTTP"/>
-        <db:select config-ref="Derby_Configuration" doc:name="Database">
-            <db:parameterized-query><![CDATA[SELECT * FROM FLIGHTS]]></db:parameterized-query>
-        </db:select>
-        <object-to-json-transformer mimeType="application/json" doc:name="Object to String"/>
-        <jms:outbound-endpoint queue="flights" connector-ref="Active_MQ" doc:name="JMS"/>
-    </flow>
-    <flow name="mainFlow">
-        <http:listener config-ref="HTTP_Main_Flow" path="/yared" doc:name="HTTP"/>
-        <flow-ref name="secondFlow" doc:name="Flow Reference"/>
-        <set-payload value="#['Flow 1']" doc:name="Set Payload to FLOW 1"/>
-        <logger message="#[message.payload]" level="INFO" doc:name="Logger"/>
-        <catch-exception-strategy doc:name="Catch All Exception">
-            <set-payload value="#['Flow 1 Error']" doc:name="Set Payload to Flow 1 Error"/>
-            <logger message="#[message.payload]" level="INFO" doc:name="Logger"/>
-        </catch-exception-strategy>
-    </flow>
-    <flow name="secondFlow">
-        <set-payload value="#['Flow 2']" doc:name="Set Payload to Flow 2"/>
-        <scripting:component doc:name="Groovy">
-            <scripting:script engine="Groovy">
+	
+	<http:listener-config name="HTTP_Listener_Configuration" host="localhost" port="8081" doc:name="HTTP Listener Configuration" />
+	
+	<spring:beans>
+		<spring:bean id="Bean" name="Bean" class="com.mulesoft.training.Database" />
+	</spring:beans>
+
+	<db:derby-config name="Derby_Configuration" url="jdbc:derby:memory:muleEmbeddedDB;create=true" doc:name="Derby Configuration" />
+	
+	<jms:activemq-connector name="Active_MQ" brokerURL="vm://localhost" validateConnections="true" doc:name="Active MQ" />
+	
+	<http:listener-config name="HTTP_Main_Flow" host="0.0.0.0" port="8085" doc:name="HTTP Listener Configuration" />
+
+	<flow name="mavenFlow">
+		<http:listener config-ref="HTTP_Main_Flow" path="/hello" doc:name="HTTP" />
+		<db:select config-ref="Derby_Configuration" doc:name="Database">
+			<db:parameterized-query><![CDATA[SELECT * FROM FLIGHTS]]></db:parameterized-query>
+		</db:select>
+		<object-to-json-transformer mimeType="application/json" doc:name="Object to String" />
+		<jms:outbound-endpoint queue="flights" connector-ref="Active_MQ" doc:name="JMS" />
+	</flow>
+	
+	<flow name="mainFlow">
+		<http:listener config-ref="HTTP_Main_Flow" path="/yared" doc:name="HTTP" />
+		<flow-ref name="secondFlow" doc:name="Flow Reference" />
+		<set-payload value="#['Flow 1']" doc:name="Set Payload to FLOW 1" />
+		<logger message="#[message.payload]" level="INFO" doc:name="Logger" />
+		<catch-exception-strategy doc:name="Catch All Exception">
+			<set-payload value="#['Flow 1 Error']" doc:name="Set Payload to Flow 1 Error" />
+			<logger message="#[message.payload]" level="INFO" doc:name="Logger" />
+		</catch-exception-strategy>
+	</flow>
+	
+	<flow name="secondFlow">
+		<set-payload value="#['Flow 2']" doc:name="Set Payload to Flow 2" />
+		<scripting:component doc:name="Groovy">
+			<scripting:script engine="Groovy">
             	<![CDATA[ throw new java.lang.Exception('Flow 2 Exception')]]>
-            </scripting:script>
-        </scripting:component>
-        <catch-exception-strategy doc:name="Catch All Exception">
-            <set-payload value="#['Flow 2 Error']" doc:name="Set Paylod to Flow 2 Error"/>
-        </catch-exception-strategy>
-    </flow>
-    <flow name="logFlights">
-        <jms:inbound-endpoint queue="flights" connector-ref="Active_MQ" doc:name="JMS"/>
-        <logger message="#[message.payload]" level="INFO" doc:name="Logger"/>
-    </flow>
+			</scripting:script>
+		</scripting:component>
+		<catch-exception-strategy doc:name="Catch All Exception">
+			<set-payload value="#['Flow 2 Error']" doc:name="Set Paylod to Flow 2 Error" />
+		</catch-exception-strategy>
+	</flow>
+	
+	<flow name="logFlights">
+		<jms:inbound-endpoint queue="flights" connector-ref="Active_MQ" doc:name="JMS" />
+		<logger message="#[message.payload]" level="INFO" doc:name="Logger" />
+	</flow>
+	
 </mule>
