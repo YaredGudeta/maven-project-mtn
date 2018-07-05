@@ -7,10 +7,10 @@ import org.mule.tck.junit4.FunctionalTestCase;
 
 public class HelloMavenTest extends FunctionalTestCase {
 
-    @Test
-    public void mavenFlowReturnsHelloMaven() throws Exception {
-        runFlowAndExpect("mainFlow", "Flow 1");
-    }
+   // @Test
+    //public void mavenFlowReturnsHelloMaven() throws Exception {
+     //   runFlowAndExpect("mainFlow", "Flow 1");
+    //}
     
     @Override
     protected String getConfigFile() {
